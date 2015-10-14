@@ -266,7 +266,6 @@ namespace RiverCrossAI.ViewModels
         #region Commands
 
         private RelayCommand _beginSearchCommand;
-
         public RelayCommand BeginSearchCommand
         {
             get
