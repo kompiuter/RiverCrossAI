@@ -1,14 +1,16 @@
-﻿<Window x:Class="RiverCrossAI.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:local="clr-namespace:RiverCrossAI"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:vm="clr-namespace:RiverCrossAI.ViewModels"
-        Title="MainWindow"
-        Width="525"
-        Height="350"
-        mc:Ignorable="d">
+﻿<Controls:MetroWindow x:Class="RiverCrossAI.MainWindow"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                      EnableDWMDropShadow="True"
+                      xmlns:local="clr-namespace:RiverCrossAI"
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                      xmlns:vm="clr-namespace:RiverCrossAI.ViewModels"
+                      Title="MainWindow"
+                      Width="525"
+                      Height="350"
+                      mc:Ignorable="d">
     <Window.DataContext>
         <vm:AIViewModel />
     </Window.DataContext>
@@ -20,7 +22,7 @@
 
         <Grid Margin="4">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
+                <ColumnDefinition />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
 
@@ -32,18 +34,29 @@
             </Grid.RowDefinitions>
 
             <TextBlock>
-                <Run Text="States Expanded: "/>
-                <Run Text="{Binding ExpandedCount}"/>
+                <Run Text="States Expanded: " />
+                <Run Text="{Binding ExpandedCount}" />
             </TextBlock>
 
-            <TextBlock Text="Open States" Grid.Row="1" FontWeight="SemiBold"/>
-            <ListView Grid.Row="2" ItemsSource="{Binding OpenStates}" MaxHeight="368" BorderThickness="0">
+            <TextBlock Grid.Row="1"
+                       FontWeight="SemiBold"
+                       Text="Open States" />
+
+            <TextBlock Grid.Row="1"
+                       Grid.Column="2"
+                       FontWeight="SemiBold"
+                       Text="Closed States" />
+            <ListView Grid.Row="2"
+                      MaxHeight="368"
+                      IsHitTestVisible="False"
+                      BorderThickness="0"
+                      ItemsSource="{Binding OpenStates}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <TextBlock>
-                                <Run Text="("/><Run Text="{Binding X, Mode=OneWay}"/><Run Text=","/>
-                                <Run Text="{Binding Y, Mode=OneWay}"/><Run Text=","/>
-                                <Run Text="{Binding Z, Mode=OneWay}"/><Run Text=")"/>
+                            <Run Text="(" /><Run Text="{Binding X, Mode=OneWay}" /><Run Text="," />
+                            <Run Text="{Binding Y, Mode=OneWay}" /><Run Text="," />
+                            <Run Text="{Binding Z, Mode=OneWay}" /><Run Text=")" />
                         </TextBlock>
                     </DataTemplate>
                 </ListView.ItemTemplate>
@@ -51,63 +64,69 @@
                     <Style TargetType="ListView">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding GoalReached}" Value="True">
-                                <Setter Property="Background" Value="#BDECB6"/>
+                                <Setter Property="Background" Value="#BDECB6" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
                 </ListView.Style>
             </ListView>
-
-            <TextBlock Text="Closed States" Grid.Row="1" Grid.Column="2" FontWeight="SemiBold"/>
-            <ListView Grid.Row="2" Grid.Column="2" ItemsSource="{Binding ClosedStates}" MaxHeight="368" BorderThickness="0">
+            <ListView Grid.Row="2"
+                      Grid.Column="2"
+                      IsHitTestVisible="False"
+                      MaxHeight="368"
+                      BorderThickness="0"
+                      ItemsSource="{Binding ClosedStates}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <TextBlock>
-                            <Run Text="("/><Run Text="{Binding X, Mode=OneWay}"/><Run Text=","/>
-                            <Run Text="{Binding Y, Mode=OneWay}"/><Run Text=","/>
-                            <Run Text="{Binding Z, Mode=OneWay}"/><Run Text=")"/>
+                            <Run Text="(" /><Run Text="{Binding X, Mode=OneWay}" /><Run Text="," />
+                            <Run Text="{Binding Y, Mode=OneWay}" /><Run Text="," />
+                            <Run Text="{Binding Z, Mode=OneWay}" /><Run Text=")" />
                         </TextBlock>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
 
-            <Grid Grid.Row="3" Grid.ColumnSpan="2" VerticalAlignment="Bottom" Margin="0,4">
+            <Grid Grid.Row="3"
+                  Grid.ColumnSpan="2"
+                  Margin="0,4"
+                  VerticalAlignment="Bottom">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
                 </Grid.ColumnDefinitions>
 
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition/>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
                 </Grid.RowDefinitions>
 
                 <StackPanel Orientation="Horizontal">
-                    <RadioButton Content="BFS" IsChecked="{Binding BFSEnabled}"/>
-                    <RadioButton Margin="4,0,0,0" Content="DFS"/>
+                    <RadioButton Content="BFS" IsChecked="{Binding BFSEnabled}" />
+                    <RadioButton Margin="4,0,0,0" Content="DFS" />
                 </StackPanel>
-            
-                <TextBlock Text="Delay (ms per expansion)" Grid.Row="1"/>
+
+                <TextBlock Grid.Row="1" Text="Delay (ms per expansion)" />
                 <Slider x:Name="delaySlider"
-                        Minimum="0"
                         Grid.Row="2"
                         Width="162"
-                        AutoToolTipPrecision="0"
-                        AutoToolTipPlacement="BottomRight"
                         HorizontalAlignment="Right"
+                        AutoToolTipPlacement="BottomRight"
+                        AutoToolTipPrecision="0"
                         Maximum="1000"
+                        Minimum="0"
                         TickFrequency="10"
-                        Value="{Binding DelaySpeed}"/>
-                    
+                        Value="{Binding DelaySpeed}" />
+
 
                 <Button Grid.Row="2"
                         Grid.Column="2"
-                        Command="{Binding BeginSearchCommand}"
                         HorizontalAlignment="Right"
+                        Command="{Binding BeginSearchCommand}"
                         Content="Begin" />
             </Grid>
         </Grid>
 
     </Grid>
-</Window>
+</Controls:MetroWindow>

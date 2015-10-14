@@ -1,4 +1,5 @@
-﻿using RiverCrossAI.Codes;
+﻿using MahApps.Metro.Controls;
+using RiverCrossAI.Codes;
 using RiverCrossAI.Extensions;
 using RiverCrossAI.ViewModels;
 using System;
@@ -21,7 +22,7 @@ namespace RiverCrossAI
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : MetroWindow
     {
         public MainWindow()
         {
