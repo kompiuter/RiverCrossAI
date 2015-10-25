@@ -64,6 +64,11 @@ namespace RiverCrossAI.Codes
 
         }
 
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
         public override string ToString()
         {
             return $"x:{X}, y:{Y}, z:{Z},";

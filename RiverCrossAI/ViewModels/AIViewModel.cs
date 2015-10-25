@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -15,6 +16,8 @@ namespace RiverCrossAI.ViewModels
     class AIViewModel : BindableBase
     {
         #region Properties
+
+        public CancellationTokenSource CancelSource { get; set; }
 
         private int _expandedCount = 0;
         /// <summary>
@@ -43,11 +46,12 @@ namespace RiverCrossAI.ViewModels
             }
         }
 
-        private bool _goalReached = false;
+        private bool? _goalReached;
         /// <summary>
-        /// Indicates whether search has successfully reached the goal state
+        /// Indicates whether search has successfully reached the goal state.
+        /// A null value indicates that the search has not yet started
         /// </summary>
-        public bool GoalReached
+        public bool? GoalReached
         {
             get { return _goalReached; }
             set { Set(ref _goalReached, value); }
@@ -160,20 +164,37 @@ namespace RiverCrossAI.ViewModels
                             else
                                 OpenStates.Insert(DFScount++, childState);
 
+                            // Check if cancellation is requested
+                            if (CancelSource.Token.IsCancellationRequested)
+                                return;
+
                             // Delay here if user has chosen so
                             await Task.Delay(Convert.ToInt32(DelaySpeed));
                         }
                     }
                 }
             }
-            finally { IsBusy = false; }          
+            finally
+            {
+                IsBusy = false;
+
+                // Goal reached should be explicitly set to fault as it is nullable
+                if (GoalReached != true)
+                    GoalReached = false;
+            }          
         }
 
         private void InitialiseValues()
         {
+            // Set goal reached to null (to indicate that search hasn't started)
+            GoalReached = null;
+
             // Initialise list of operators
             if (Operators == null)
                 CreateFunctors();
+
+            // Create a new cancellation token source
+            CancelSource = new CancellationTokenSource();
 
             // Set count to 0
             ExpandedCount = 0;
@@ -181,8 +202,6 @@ namespace RiverCrossAI.ViewModels
             // Clear collections
             OpenStates = new ObservableCollection<Vector3>();
             ClosedStates = new ObservableCollection<Vector3>();
-
-            GoalReached = false;
         }
 
         /// <summary>
@@ -285,6 +304,18 @@ namespace RiverCrossAI.ViewModels
                     _beginSearchCommand = new RelayCommand(async (p) => await ExecuteBeginSearch(), (p) => !IsBusy);
 
                 return _beginSearchCommand;                
+            }
+        }
+
+        private RelayCommand _cancelSearchCommand;
+        public RelayCommand CancelSearchCommand
+        {
+            get
+            {
+                if (_cancelSearchCommand == null)
+                    _cancelSearchCommand = new RelayCommand((p) => CancelSource.Cancel(), (p) => IsBusy);
+
+                return _cancelSearchCommand;
             }
         }
 

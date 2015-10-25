@@ -3,26 +3,106 @@
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                       xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                      EnableDWMDropShadow="True"
+                      xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+                      xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
                       xmlns:local="clr-namespace:RiverCrossAI"
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                       xmlns:vm="clr-namespace:RiverCrossAI.ViewModels"
-                      Title="MainWindow"
-                      Width="525"
-                      Height="350"
+                      Title="River Cross AI"
+                      Width="1024"
+                      Height="768"
+                      MaxWidth="1024"
+                      MaxHeight="768"
+                      EnableDWMDropShadow="True"
                       mc:Ignorable="d">
     <Window.DataContext>
         <vm:AIViewModel />
     </Window.DataContext>
-    <Grid>
+
+    <Window.Resources>
+        <Style TargetType="RadioButton">
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+
+        <Style TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+
+        <Storyboard x:Key="CancelExpandStoryboard">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="button" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)">
+                <EasingDoubleKeyFrame KeyTime="0" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseOut" />
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.7" Value="1">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseOut" />
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="BeginShrinkStoryboard">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="button1" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)">
+                <EasingDoubleKeyFrame KeyTime="0" Value="1">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseOut" />
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.7" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseOut" />
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="CancelShrinkStoryboard">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="button" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)">
+                <EasingDoubleKeyFrame KeyTime="0" Value="1">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseOut" />
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.7" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseOut" />
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="BeginExpandtoryboard">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="button1" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)">
+                <EasingDoubleKeyFrame KeyTime="0" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseOut" />
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.7" Value="1">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseOut" />
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+    </Window.Resources>
+
+    <Grid Margin="8,4">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="256" />
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="20" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-        <Grid Margin="4">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!--  Options Grid  -->
+        <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
 
@@ -30,103 +110,187 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <TextBlock>
-                <Run Text="States Expanded: " />
-                <Run Text="{Binding ExpandedCount}" />
-            </TextBlock>
+            <TextBlock Style="{DynamicResource TextBlockHeader}" Text="Options" />
 
             <TextBlock Grid.Row="1"
-                       FontWeight="SemiBold"
-                       Text="Open States" />
+                       Style="{DynamicResource TextBlockSubHeader}"
+                       Text="Traversal Algorithm" />
+            <StackPanel Grid.Row="2"
+                        Margin="0,4"
+                        Orientation="Horizontal">
+                <RadioButton Content="BFS" IsChecked="{Binding BFSEnabled}" />
+                <RadioButton Margin="4,0,0,0" Content="DFS" />
+            </StackPanel>
+
+            <TextBlock Grid.Row="3"
+                       Style="{DynamicResource TextBlockSubHeader}"
+                       Text="Delay (ms)" />
+            <Slider x:Name="delaySlider"
+                    Grid.Row="4"
+                    Width="162"
+                    HorizontalAlignment="Right"
+                    AutoToolTipPlacement="BottomRight"
+                    AutoToolTipPrecision="0"
+                    Maximum="1500"
+                    Minimum="0"
+                    Value="{Binding DelaySpeed}" />
+
+        </Grid>
+
+        <!--  State Information Grid  -->
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <TextBlock Style="{DynamicResource TextBlockHeader}" Text="State Lists" />
 
             <TextBlock Grid.Row="1"
-                       Grid.Column="2"
-                       FontWeight="SemiBold"
-                       Text="Closed States" />
-            <ListView Grid.Row="2"
-                      MaxHeight="368"
-                      IsHitTestVisible="False"
-                      BorderThickness="0"
-                      ItemsSource="{Binding OpenStates}">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock>
-                            <Run Text="(" /><Run Text="{Binding X, Mode=OneWay}" /><Run Text="," />
-                            <Run Text="{Binding Y, Mode=OneWay}" /><Run Text="," />
-                            <Run Text="{Binding Z, Mode=OneWay}" /><Run Text=")" />
-                        </TextBlock>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-                <ListView.Style>
-                    <Style TargetType="ListView">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding GoalReached}" Value="True">
-                                <Setter Property="Background" Value="#BDECB6" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </ListView.Style>
-            </ListView>
-            <ListView Grid.Row="2"
-                      Grid.Column="2"
-                      IsHitTestVisible="False"
-                      MaxHeight="368"
-                      BorderThickness="0"
-                      ItemsSource="{Binding ClosedStates}">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock>
-                            <Run Text="(" /><Run Text="{Binding X, Mode=OneWay}" /><Run Text="," />
-                            <Run Text="{Binding Y, Mode=OneWay}" /><Run Text="," />
-                            <Run Text="{Binding Z, Mode=OneWay}" /><Run Text=")" />
-                        </TextBlock>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+                       Style="{DynamicResource TextBlockSubHeader}"
+                       Text="States Expanded" />
+            <TextBlock Grid.Row="2"
+                       Margin="0,4"
+                       Text="{Binding ExpandedCount}" />
 
-            <Grid Grid.Row="3"
-                  Grid.ColumnSpan="2"
-                  Margin="0,4"
-                  VerticalAlignment="Bottom">
+            <!--  Lists Grid  -->
+            <Grid Grid.Row="3">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="10" />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
-                    <RowDefinition />
                 </Grid.RowDefinitions>
 
-                <StackPanel Orientation="Horizontal">
-                    <RadioButton Content="BFS" IsChecked="{Binding BFSEnabled}" />
-                    <RadioButton Margin="4,0,0,0" Content="DFS" />
-                </StackPanel>
+                <!--  Open List  -->
+                <TextBlock Style="{DynamicResource TextBlockSubHeader}" Text="Open States" />
 
-                <TextBlock Grid.Row="1" Text="Delay (ms per expansion)" />
-                <Slider x:Name="delaySlider"
-                        Grid.Row="2"
-                        Width="162"
-                        HorizontalAlignment="Right"
-                        AutoToolTipPlacement="BottomRight"
-                        AutoToolTipPrecision="0"
-                        Maximum="1000"
-                        Minimum="0"
-                        TickFrequency="10"
-                        Value="{Binding DelaySpeed}" />
+                <!--  Closed List  -->
+                <TextBlock Grid.Column="2"
+                           Style="{DynamicResource TextBlockSubHeader}"
+                           Text="Closed States" />
+                <ScrollViewer Grid.Row="1"
+                              MaxHeight="256"
+                              VerticalScrollBarVisibility="Auto">
+                    <ListView MaxHeight="368"
+                              BorderThickness="0"
+                              IsHitTestVisible="False"
+                              ItemsSource="{Binding OpenStates}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock HorizontalAlignment="Center"><Run Text="(" /><Run Text="{Binding X, Mode=OneWay}" /><Run Text="," /><Run Text=" " /><Run Text="{Binding Y, Mode=OneWay}" /><Run Text="," /><Run Text=" " /><Run Text="{Binding Z, Mode=OneWay}" /><Run Text=")" />
+                                </TextBlock>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </ScrollViewer>
+                <ScrollViewer Grid.Row="1"
+                              Grid.Column="2"
+                              MaxHeight="256"
+                              VerticalScrollBarVisibility="Auto">
+                    <ListView BorderThickness="0"
+                              IsHitTestVisible="False"
+                              ItemsSource="{Binding ClosedStates}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock HorizontalAlignment="Center"><Run Text="(" /><Run Text="{Binding X, Mode=OneWay}" /><Run Text="," /><Run Text=" " /><Run Text="{Binding Y, Mode=OneWay}" /><Run Text="," /><Run Text=" " /><Run Text="{Binding Z, Mode=OneWay}" /><Run Text=")" />
+                                </TextBlock>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </ScrollViewer>
 
-
-                <Button Grid.Row="2"
-                        Grid.Column="2"
-                        HorizontalAlignment="Right"
-                        Command="{Binding BeginSearchCommand}"
-                        Content="Begin" />
             </Grid>
+
+            <TextBlock Grid.Row="4"
+                       HorizontalAlignment="Center"
+                       FontSize="21">
+                <TextBlock.Style>
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding GoalReached}" Value="True">
+                                <Setter Property="Text" Value="✔ Goal Reached" />
+                                <Setter Property="Foreground" Value="Green" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding GoalReached}" Value="False">
+                                <Setter Property="Text" Value="✘ Goal Not Found" />
+                                <Setter Property="Foreground" Value="Red" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+
+        </Grid>
+
+        <!--  Control Buttons Grid  -->
+        <Grid Grid.RowSpan="5"
+              Grid.Row="1"
+              Grid.ColumnSpan="5"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Bottom">
+            <Button x:Name="button1"
+                    Command="{Binding BeginSearchCommand}"
+                    Content="Begin"
+                    FontSize="60"
+                    Foreground="Green"
+                    RenderTransformOrigin="0,0.5"
+                    Style="{StaticResource ChromelessButtonStyle}">
+                <Button.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform />
+                        <SkewTransform />
+                        <RotateTransform />
+                        <TranslateTransform />
+                    </TransformGroup>
+                </Button.RenderTransform>
+                <i:Interaction.Triggers>
+                    <ei:DataTrigger Binding="{Binding IsBusy}" Value="True">
+                        <ei:ControlStoryboardAction ControlStoryboardOption="Play" Storyboard="{StaticResource BeginShrinkStoryboard}" />
+                    </ei:DataTrigger>
+                    <ei:DataTrigger Binding="{Binding IsBusy}" Value="False">
+                        <ei:ControlStoryboardAction ControlStoryboardOption="Play" Storyboard="{StaticResource BeginExpandtoryboard}" />
+                    </ei:DataTrigger>
+                </i:Interaction.Triggers>
+            </Button>
+            <Button x:Name="button"
+                    Command="{Binding CancelSearchCommand}"
+                    Content="Cancel"
+                    FontSize="60"
+                    Foreground="Red"
+                    RenderTransformOrigin="1,0.5"
+                    Style="{StaticResource ChromelessButtonStyle}">
+                <Button.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform ScaleX="0" />
+                        <SkewTransform />
+                        <RotateTransform />
+                        <TranslateTransform />
+                    </TransformGroup>
+                </Button.RenderTransform>
+                <i:Interaction.Triggers>
+                    <ei:DataTrigger Binding="{Binding IsBusy}" Value="True">
+                        <ei:ControlStoryboardAction ControlStoryboardOption="Play" Storyboard="{StaticResource CancelExpandStoryboard}" />
+                    </ei:DataTrigger>
+                    <ei:DataTrigger Binding="{Binding IsBusy}" Value="False">
+                        <ei:ControlStoryboardAction ControlStoryboardOption="Play" Storyboard="{StaticResource CancelShrinkStoryboard}" />
+                    </ei:DataTrigger>
+                </i:Interaction.Triggers>
+            </Button>
         </Grid>
 
     </Grid>
+
+
 </Controls:MetroWindow>
