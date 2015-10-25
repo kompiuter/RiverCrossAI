@@ -15,9 +15,19 @@ namespace RiverCrossAI.ViewModels
 {
     class AIViewModel : BindableBase
     {
+        #region Constructors
+
+        public AIViewModel()
+        {
+            // Initialise list of operators
+            CreateFunctors();
+        }
+
+        #endregion
+
         #region Properties
 
-        public CancellationTokenSource CancelSource { get; set; }
+        private CancellationTokenSource CancelSource { get; set; }
 
         private int _expandedCount = 0;
         /// <summary>
@@ -29,7 +39,7 @@ namespace RiverCrossAI.ViewModels
             set { Set(ref _expandedCount, value); }
         }
 
-        private double _delaySpeed;
+        private double _delaySpeed = 250;
         /// <summary>
         /// Speed at which AI delays 'thinking'. Increase delay to make results
         /// on UI clearer
@@ -92,6 +102,14 @@ namespace RiverCrossAI.ViewModels
         }
 
 
+        private ObservableCollection<FuncWrapper> _operators;
+        public ObservableCollection<FuncWrapper> Operators
+        {
+            get { return _operators; }
+            set { Set(ref _operators, value); }
+        }
+        
+
         #endregion
 
         #region Fields
@@ -107,8 +125,6 @@ namespace RiverCrossAI.ViewModels
         /// & no cannibals on the start side of the river and the boat is not present
         /// </summary>
         protected Vector3 GoalState => new Vector3(0, 0, 0);
-
-        protected List<FuncWrapper> Operators { get; set; }
 
         #endregion
 
@@ -189,10 +205,6 @@ namespace RiverCrossAI.ViewModels
             // Set goal reached to null (to indicate that search hasn't started)
             GoalReached = null;
 
-            // Initialise list of operators
-            if (Operators == null)
-                CreateFunctors();
-
             // Create a new cancellation token source
             CancelSource = new CancellationTokenSource();
 
@@ -209,26 +221,26 @@ namespace RiverCrossAI.ViewModels
         /// </summary>
         private void CreateFunctors()
         {
-            Operators = new List<FuncWrapper>();
+            Operators = new ObservableCollection<FuncWrapper>();
 
             Operators.Add(new FuncWrapper
             {
                 Functor = (v) => v.Z == 0 ? v.Add(1, 0, 1) : v.Subtract(1, 0, 1),
-                Order = 1,
+                Order = 0,
                 Name = "Move 1 Missionary"
             });
 
             Operators.Add(new FuncWrapper
             {
                 Functor = (v) => v.Z == 0 ? v.Add(2, 0, 1) : v.Subtract(2, 0, 1),
-                Order = 2,
+                Order = 1,
                 Name = "Move 2 Missionaries"
             });
 
             Operators.Add(new FuncWrapper
             {
                 Functor = (v) => v.Z == 0 ? v.Add(0, 1, 1) : v.Subtract(0, 1, 1),
-                Order = 3,
+                Order = 2,
                 Name = "Move 1 Cannibal"
             });
 
@@ -242,7 +254,7 @@ namespace RiverCrossAI.ViewModels
             Operators.Add(new FuncWrapper
             {
                 Functor = (v) => v.Z == 0 ? v.Add(1, 1, 1) : v.Subtract(1, 1, 1),
-                Order = 3,
+                Order = 4,
                 Name = "Move 1 Cannibal & 1 Missionary"
             });
         }

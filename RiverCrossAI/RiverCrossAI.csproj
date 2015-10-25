@@ -70,6 +70,9 @@
     <Compile Include="Common\BindableBase.cs" />
     <Compile Include="Common\RelayCommand.cs" />
     <Compile Include="Extensions\Vector3Extensions.cs" />
+    <Compile Include="ListReorderCodes\DragAdorner.cs" />
+    <Compile Include="ListReorderCodes\ListViewDragDropManager.cs" />
+    <Compile Include="ListReorderCodes\MouseUtilities.cs" />
     <Compile Include="ViewModels\AIViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

@@ -5,6 +5,7 @@
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                       xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
                       xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+                      xmlns:listReorder="clr-namespace:RiverCrossAI.ListReorderCodes"
                       xmlns:local="clr-namespace:RiverCrossAI"
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                       xmlns:vm="clr-namespace:RiverCrossAI.ViewModels"
@@ -20,12 +21,45 @@
     </Window.DataContext>
 
     <Window.Resources>
+
         <Style TargetType="RadioButton">
             <Setter Property="FontSize" Value="12" />
         </Style>
 
         <Style TargetType="TextBlock">
             <Setter Property="FontSize" Value="12" />
+        </Style>
+
+        <Style x:Key="ItemContStyle" TargetType="ListViewItem">
+            <Style.Resources>
+                <LinearGradientBrush x:Key="MouseOverBrush" StartPoint="0.5, 0" EndPoint="0.5, 1">
+                    <GradientStop Offset="0" Color="#22000000" />
+                    <GradientStop Offset="0.4" Color="#44000000" />
+                    <GradientStop Offset="0.6" Color="#55000000" />
+                    <GradientStop Offset="0.9" Color="#33000000" />
+                    <GradientStop Offset="1" Color="#22000000" />
+                </LinearGradientBrush>
+            </Style.Resources>
+            <Setter Property="Padding" Value="0,4" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <!--
+                The default control template for ListViewItem has a Border
+                which contains the item's content.
+            -->
+            <Setter Property="Border.BorderThickness" Value="0,0,0,0.5" />
+            <Setter Property="Border.BorderBrush" Value="LightGray" />
+            <!--
+                These triggers react to changes in the attached properties set
+                during a managed drag-drop operation.
+            -->
+            <Style.Triggers>
+                <Trigger Property="listReorder:ListViewItemDragState.IsBeingDragged" Value="True">
+                    <Setter Property="FontWeight" Value="DemiBold" />
+                </Trigger>
+                <Trigger Property="listReorder:ListViewItemDragState.IsUnderDragCursor" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource AccentColorBrush4}" />
+                </Trigger>
+            </Style.Triggers>
         </Style>
 
         <Storyboard x:Key="CancelExpandStoryboard">
@@ -112,6 +146,8 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
             <TextBlock Style="{DynamicResource TextBlockHeader}" Text="Options" />
@@ -128,11 +164,31 @@
 
             <TextBlock Grid.Row="3"
                        Style="{DynamicResource TextBlockSubHeader}"
+                       Text="Order of Operators" />
+            <ListView x:Name="operatorsListView"
+                      Grid.Row="4"
+                      Margin="0,4"
+                      Background="#33EEEEEE"
+                      BorderBrush="{DynamicResource AccentColorBrush}"
+                      BorderThickness="1"
+                      ItemContainerStyle="{StaticResource ItemContStyle}"
+                      ItemsSource="{Binding Operators}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Margin="4,1" >
+                            <Run Text="•"/>
+                            <Run Text="{Binding Name}"/>
+                        </TextBlock>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <TextBlock Grid.Row="5"
+                       Style="{DynamicResource TextBlockSubHeader}"
                        Text="Delay (ms)" />
             <Slider x:Name="delaySlider"
-                    Grid.Row="4"
-                    Width="162"
-                    HorizontalAlignment="Right"
+                    Grid.Row="6"
+                    HorizontalAlignment="Stretch"
                     AutoToolTipPlacement="BottomRight"
                     AutoToolTipPrecision="0"
                     Maximum="1500"
@@ -181,7 +237,7 @@
                            Style="{DynamicResource TextBlockSubHeader}"
                            Text="Closed States" />
                 <ScrollViewer Grid.Row="1"
-                              MaxHeight="256"
+                              MaxHeight="386"
                               VerticalScrollBarVisibility="Auto">
                     <ListView MaxHeight="368"
                               BorderThickness="0"
@@ -197,7 +253,7 @@
                 </ScrollViewer>
                 <ScrollViewer Grid.Row="1"
                               Grid.Column="2"
-                              MaxHeight="256"
+                              MaxHeight="386"
                               VerticalScrollBarVisibility="Auto">
                     <ListView BorderThickness="0"
                               IsHitTestVisible="False"
@@ -235,8 +291,8 @@
         </Grid>
 
         <!--  Control Buttons Grid  -->
-        <Grid Grid.RowSpan="5"
-              Grid.Row="1"
+        <Grid Grid.Row="1"
+              Grid.RowSpan="5"
               Grid.ColumnSpan="5"
               HorizontalAlignment="Center"
               VerticalAlignment="Bottom">
