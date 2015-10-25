@@ -104,32 +104,7 @@ namespace RiverCrossAI.ViewModels
         /// </summary>
         protected Vector3 GoalState => new Vector3(0, 0, 0);
 
-        /// <summary>
-        /// Operator for moving 1 missionary with the boat
-        /// </summary>
-        Func<Vector3, Vector3> Move1MFunc = (v) => v.Z == 0 ? v.Add(1, 0, 1) : v.Subtract(1, 0, 1);
-
-        /// <summary>
-        /// Operator for moving 2 missionaries with the boat
-        /// </summary>
-        Func<Vector3, Vector3> Move2MFunc = (v) => v.Z == 0 ? v.Add(2, 0, 1) : v.Subtract(2, 0, 1);
-
-        /// <summary>
-        /// Operator for moving 1 cannibal with the boat
-        /// </summary>
-        Func<Vector3, Vector3> Move1CFunc = (v) => v.Z == 0 ? v.Add(0, 1, 1) : v.Subtract(0, 1, 1);
-
-        /// <summary>
-        /// Operator for moving 2 cannibals with the boat
-        /// </summary>
-        Func<Vector3, Vector3> Move2CFunc = (v) => v.Z == 0 ? v.Add(0, 2, 1) : v.Subtract(0, 2, 1);
-
-        /// <summary>
-        /// Operator for moving 1 missionary & 1 cannibal with the boat
-        /// </summary>
-        Func<Vector3, Vector3> MoveMCFunc = (v) => v.Z == 0 ? v.Add(1, 1, 1) : v.Subtract(1, 1, 1);
-
-        protected List<Func<Vector3, Vector3>> Operators { get; set; }
+        protected List<FuncWrapper> Operators { get; set; }
 
         #endregion
 
@@ -178,10 +153,10 @@ namespace RiverCrossAI.ViewModels
                         // else discard it as it has already been expanded
                         if (!OpenStates.Any(s => s.Equals(childState)) && !ClosedStates.Any(s => s.Equals(childState)))
                         {
-                            // If BFS is enabled, then add the item to the end of the collection so it acts as a queue
+                            // If BFS is enabled, then add the item to the end of the collection so it behaves like a queue
                             if (BFSEnabled)
                                 OpenStates.Insert(OpenStates.Count, childState);
-                            // If DFS is enabled, add items to the beginning of the collection so it acts as a stack
+                            // If DFS is enabled, add items to the beginning of the collection so it behaves like a stack
                             else
                                 OpenStates.Insert(DFScount++, childState);
 
@@ -198,14 +173,7 @@ namespace RiverCrossAI.ViewModels
         {
             // Initialise list of operators
             if (Operators == null)
-            {
-                Operators = new List<Func<Vector3, Vector3>>();
-                Operators.Add(Move1MFunc);
-                Operators.Add(Move2MFunc);
-                Operators.Add(Move1CFunc);
-                Operators.Add(Move2CFunc);
-                Operators.Add(MoveMCFunc);
-            }
+                CreateFunctors();
 
             // Set count to 0
             ExpandedCount = 0;
@@ -218,16 +186,59 @@ namespace RiverCrossAI.ViewModels
         }
 
         /// <summary>
+        /// Initialises list of operators
+        /// </summary>
+        private void CreateFunctors()
+        {
+            Operators = new List<FuncWrapper>();
+
+            Operators.Add(new FuncWrapper
+            {
+                Functor = (v) => v.Z == 0 ? v.Add(1, 0, 1) : v.Subtract(1, 0, 1),
+                Order = 1,
+                Name = "Move 1 Missionary"
+            });
+
+            Operators.Add(new FuncWrapper
+            {
+                Functor = (v) => v.Z == 0 ? v.Add(2, 0, 1) : v.Subtract(2, 0, 1),
+                Order = 2,
+                Name = "Move 2 Missionaries"
+            });
+
+            Operators.Add(new FuncWrapper
+            {
+                Functor = (v) => v.Z == 0 ? v.Add(0, 1, 1) : v.Subtract(0, 1, 1),
+                Order = 3,
+                Name = "Move 1 Cannibal"
+            });
+
+            Operators.Add(new FuncWrapper
+            {
+                Functor = (v) => v.Z == 0 ? v.Add(0, 2, 1) : v.Subtract(0, 2, 1),
+                Order = 3,
+                Name = "Move 2 Cannibals"
+            });
+
+            Operators.Add(new FuncWrapper
+            {
+                Functor = (v) => v.Z == 0 ? v.Add(1, 1, 1) : v.Subtract(1, 1, 1),
+                Order = 3,
+                Name = "Move 1 Cannibal & 1 Missionary"
+            });
+        }
+
+        /// <summary>
         /// Expands a state and returns all its children
         /// </summary>
         /// <param name="parentState">Parent state to expand for children</param>
         /// <returns>Ienumerable of children states</returns>
         protected IEnumerable<Vector3> GetChildrenStates(Vector3 parentState)
         {
-            foreach (var op in Operators)
+            foreach (var op in Operators.OrderBy(o => o.Order))
             {
                 // Get a child using the current operator
-                var possibleChild = op(parentState);
+                var possibleChild = op.Functor(parentState);
 
                 // If state is a valid state, return it
                 if (IsValidState(possibleChild))

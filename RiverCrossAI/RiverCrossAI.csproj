@@ -64,6 +64,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Codes\ExecutionOrder.cs" />
+    <Compile Include="Codes\FuncWrapper.cs" />
     <Compile Include="Codes\Vector3.cs" />
     <Compile Include="Common\BindableBase.cs" />
     <Compile Include="Common\RelayCommand.cs" />
